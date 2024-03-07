@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Interval Workout Timer</title>
+  <style>
+    /* The existing styles will remain unchanged and are not shown here for brevity */
+
+    /* Additional styles for the new elements */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -15,10 +29,25 @@
     box-sizing: border-box;
   }
 
+    .keypad button {
+      height: 50px;
+      background: #ddd; /* Light grey background */
+      font-size: 20px; /* Large font size for keypad numbers */
+      border-radius: 5px; /* Rounded corners */
+    }
   body {
     font-family: Arial, sans-serif; /* A simple, widely available font */
   }
 
+    .clear-btn {
+      background-color: #f44336; /* Red color */
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 20px; /* Space below the button */
+    }
   #timer-container {
     max-width: 400px; /* Set a max-width for the container */
     margin: 20px auto; /* Center the container */
@@ -28,6 +57,12 @@
     border-radius: 10px; /* Rounded corners */
   }
 
+    .dropdown {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
   #timer-display {
     background: black;
     color: white;
@@ -37,6 +72,13 @@
     margin-bottom: 20px; /* Space below the timer display */
   }
 
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin-bottom: 20px;
+    }
   #timer-controls button {
     padding: 10px 20px; /* Padding inside the buttons */
     font-size: 16px; /* A larger font size for better readability */
@@ -45,20 +87,46 @@
     margin: 0 10px; /* Space between buttons */
   }
 
+    .toggle-switch input {
+      display: none;
+    }
   #start-btn {
     background-color: #4CAF50; /* Green color */
     color: white;
   }
 
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+    }
   #clear-btn {
     background-color: #f44336; /* Red color */
     color: white;
   }
 
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+    }
   #intervals-container {
     margin: 20px 0; /* Vertical spacing */
   }
 
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
   #add-interval-btn {
     background-color: #009677; /* Blue color */
     color: white;
@@ -69,6 +137,9 @@
     margin-bottom: 20px; /* Space below the button */
   }
 
+    .slider.round {
+      border-radius: 34px;
+    }
   #intervals-list {
     list-style-type: none; /* Remove the default bullet points */
     text-align: left;
@@ -76,6 +147,10 @@
     margin-bottom: 20px; /* Space below the list */
   }
 
+    .slider.round:before {
+      border-radius: 50%;
+    }
+  </style>
   /* Modal Styles */
   .modal {
     display: none;
@@ -191,6 +266,35 @@
 </style>
 </head>
 <body>
+  <!-- The existing HTML for the timer will remain unchanged and is not shown here for brevity -->
+
+  <!-- Additional HTML for the new interval creation components -->
+  <div id="interval-creation-container">
+    <div class="keypad">
+      <!-- Keypad numbers -->
+      <button class="keypad-btn">1</button>
+      <!-- Add additional buttons for numbers 0-9 and clear button -->
+    </div>
+
+    <!-- Dropdowns for interval label, sound selection, and repeat count -->
+    <select class="dropdown" id="interval-label">
+      <option>Interval 1</option>
+      <!-- Additional options -->
+    </select>
+
+    <select class="dropdown" id="interval-sound">
+      <option>No Sound</option>
+      <!-- Additional options -->
+    </select>
+
+    <select class="dropdown" id="interval-repeat">
+      <option>Repeat 1</option>
+      <!-- Additional options -->
+    </select>
+
+    <!-- Toggle switch for pausing timer after interval -->
+    <label class="toggle-switch">
+      <input type="checkbox">
 <div id="timer-container">
   <div id="timer-display">
     <span id="timer">00:00:00</span>
@@ -210,6 +314,9 @@
       <input type="checkbox" id="repeat-toggle">
       <span class="slider round"></span>
     </label>
+
+    <!-- Button to add new interval -->
+    <button id="add-interval-btn">Add new interval</button>
     <p>Repeat Timer</p>
   </div>
   <div id="save-timer">
@@ -217,29 +324,18 @@
   </div>
   <div id="myModal" class="modal">
     <div class="modal-content">
-      <!-- Label input -->
-<div>
-  <label for="intervalLabel">Label:</label>
-  <input type="text" id="intervalLabel" placeholder="Interval Label">
+      <span class="close">&times;</span>
+      <p>Add an interval:</p>
+      <input type="number" id="intervalDuration" placeholder="Interval in seconds">
+      <div>
+        <label for="alarmToggle">Alert when finished?:</label>
+        <input type="checkbox" id="alarmToggle" checked>
+      </div>
+      <button id="saveInterval">Save Interval</button>
+    </div>
+  </div>
 </div>
-<!-- Sound selection -->
-<div>
-  <label for="soundSelect">Sound:</label>
-  <select id="soundSelect">
-    <option value="no-sound">No Sound</option>
-    <!-- Add more options for each sound available -->
-  </select>
-</div>
-<!-- Repeat toggle -->
-<div>
-  <label for="repeatToggle">Repeat:</label>
-  <input type="checkbox" id="repeatToggle">
-</div>
-<!-- Pause timer after interval -->
-<div>
-  <label for="pauseToggle">Pause timer after interval:</label>
-  <input type="checkbox" id="pauseToggle">
-</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let intervals = [];
