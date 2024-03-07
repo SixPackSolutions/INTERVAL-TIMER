@@ -217,18 +217,29 @@
   </div>
   <div id="myModal" class="modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
-      <p>Add an interval:</p>
-      <input type="number" id="intervalDuration" placeholder="Interval in seconds">
-      <div>
-        <label for="alarmToggle">Alert when finished?:</label>
-        <input type="checkbox" id="alarmToggle" checked>
-      </div>
-      <button id="saveInterval">Save Interval</button>
-    </div>
-  </div>
+      <!-- Label input -->
+<div>
+  <label for="intervalLabel">Label:</label>
+  <input type="text" id="intervalLabel" placeholder="Interval Label">
 </div>
-
+<!-- Sound selection -->
+<div>
+  <label for="soundSelect">Sound:</label>
+  <select id="soundSelect">
+    <option value="no-sound">No Sound</option>
+    <!-- Add more options for each sound available -->
+  </select>
+</div>
+<!-- Repeat toggle -->
+<div>
+  <label for="repeatToggle">Repeat:</label>
+  <input type="checkbox" id="repeatToggle">
+</div>
+<!-- Pause timer after interval -->
+<div>
+  <label for="pauseToggle">Pause timer after interval:</label>
+  <input type="checkbox" id="pauseToggle">
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let intervals = [];
