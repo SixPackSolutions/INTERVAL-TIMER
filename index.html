@@ -1,128 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Interval Workout Timer</title>
-  <style>
-    /* The existing styles will remain unchanged and are not shown here for brevity */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Interval Workout Timer</title>
+<style>
+  /* Basic reset for padding and margin */
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
 
-    /* Additional styles for the new elements */
-    .keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+  body {
+    font-family: Arial, sans-serif; /* A simple, widely available font */
+  }
 
-    .keypad button {
-      height: 50px;
-      background: #ddd; /* Light grey background */
-      font-size: 20px; /* Large font size for keypad numbers */
-      border-radius: 5px; /* Rounded corners */
-    }
+  #timer-container {
+    max-width: 400px; /* Set a max-width for the container */
+    margin: 20px auto; /* Center the container */
+    text-align: center;
+    background: #f5f5f5; /* Light grey background */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+  }
 
-    .clear-btn {
-      background-color: #f44336; /* Red color */
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      margin-bottom: 20px; /* Space below the button */
-    }
+  #timer-display {
+    background: black;
+    color: white;
+    font-size: 48px; /* Large font size for the timer */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    margin-bottom: 20px; /* Space below the timer display */
+  }
 
-    .dropdown {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
+  #timer-controls button {
+    padding: 10px 20px; /* Padding inside the buttons */
+    font-size: 16px; /* A larger font size for better readability */
+    border: none; /* Remove the default border */
+    border-radius: 5px; /* Slightly rounded corners for the buttons */
+    margin: 0 10px; /* Space between buttons */
+  }
 
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-      margin-bottom: 20px;
-    }
+  #start-btn {
+    background-color: #4CAF50; /* Green color */
+    color: white;
+  }
 
-    .toggle-switch input {
-      display: none;
-    }
+  #clear-btn {
+    background-color: #f44336; /* Red color */
+    color: white;
+  }
 
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-    }
+  #intervals-container {
+    margin: 20px 0; /* Vertical spacing */
+  }
 
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-    }
+  #add-interval-btn {
+    background-color: #009677; /* Blue color */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px; /* Space below the button */
+  }
 
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
+  #intervals-list {
+    list-style-type: none; /* Remove the default bullet points */
+    text-align: left;
+    padding-left: 0; /* Align with the rest of the content */
+    margin-bottom: 20px; /* Space below the list */
+  }
 
-    .slider.round {
-      border-radius: 34px;
-    }
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+  }
 
-    .slider.round:before {
-      border-radius: 50%;
-    }
-  </style>
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #repeat-container {
+    margin-bottom: 20px; /* Space below the repeat container */
+  }
+
+  /* The switch - the box around the slider */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  /* Hide default checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  #save-timer-btn {
+    background-color: #2196F3; /* Blue color */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
+</style>
 </head>
 <body>
-  <!-- The existing HTML for the timer will remain unchanged and is not shown here for brevity -->
-
-  <!-- Additional HTML for the new interval creation components -->
-  <div id="interval-creation-container">
-    <div class="keypad">
-      <!-- Keypad numbers -->
-      <button class="keypad-btn">1</button>
-      <!-- Add additional buttons for numbers 0-9 and clear button -->
-    </div>
-
-    <!-- Dropdowns for interval label, sound selection, and repeat count -->
-    <select class="dropdown" id="interval-label">
-      <option>Interval 1</option>
-      <!-- Additional options -->
-    </select>
-
-    <select class="dropdown" id="interval-sound">
-      <option>No Sound</option>
-      <!-- Additional options -->
-    </select>
-
-    <select class="dropdown" id="interval-repeat">
-      <option>Repeat 1</option>
-      <!-- Additional options -->
-    </select>
-
-    <!-- Toggle switch for pausing timer after interval -->
-    <label class="toggle-switch">
-      <input type="checkbox">
+<div id="timer-container">
+  <div id="timer-display">
+    <span id="timer">00:00:00</span>
+  </div>
+  <div id="timer-controls">
+    <button id="start-btn">Start</button>
+    <button id="clear-btn">Clear</button>
+  </div>
+  <div id="intervals-container">
+    <button id="add-interval-btn">+ Add interval</button>
+    <ul id="intervals-list">
+      <!-- List of intervals will go here -->
+    </ul>
+  </div>
+  <div id="repeat-container">
+    <label class="switch">
+      <input type="checkbox" id="repeat-toggle">
       <span class="slider round"></span>
     </label>
-
-    <!-- Button to add new interval -->
-    <button id="add-interval-btn">Add new interval</button>
+    <p>Repeat Timer</p>
   </div>
+  <div id="save-timer">
+    <button id="save-timer-btn">Save timer</button>
+  </div>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p>Add an interval:</p>
+      <input type="number" id="intervalDuration" placeholder="Interval in seconds">
+      <div>
+        <label for="alarmToggle">Alert when finished?:</label>
+        <input type="checkbox" id="alarmToggle" checked>
+      </div>
+      <button id="saveInterval">Save Interval</button>
+    </div>
+  </div>
+</div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let intervals = [];
+    let currentIntervalIndex = 0;
+    let intervalId = null;
+    let selectedSound = 'sound1.mp3'; // Ensure you have this sound file available
+
+    const modal = document.getElementById('myModal');
+    const btnCloseModal = document.getElementsByClassName("close")[0];
+    const btnSaveInterval = document.getElementById('saveInterval');
+    const btnAddInterval = document.getElementById('add-interval-btn');
+    const startBtn = document.getElementById('start-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const alarmToggle = document.getElementById('alarmToggle');
+
+    btnAddInterval.addEventListener('click', function() {
+        modal.style.display = "block";
+    });
+
+    btnCloseModal.addEventListener('click', function() {
+        modal.style.display = "none";
+    });
+
+    btnSaveInterval.addEventListener('click', function() {
+        const intervalDuration = document.getElementById('intervalDuration').value;
+
+        if (intervalDuration && !isNaN(intervalDuration) && intervalDuration > 0) {
+            intervals.push(parseInt(intervalDuration));
+            updateIntervalList();
+            modal.style.display = "none"; // Close the modal
+            document.getElementById('intervalDuration').value = ''; // Reset input field
+        } else {
+            alert("Please enter a positive number.");
+        }
+    });
+
+    startBtn.addEventListener('click', startTimer);
+    clearBtn.addEventListener('click', stopTimer);
+
+    function startTimer() {
+        if (intervals.length === 0) {
+            alert("Please add intervals before starting the timer.");
+            return;
+        }
+        currentIntervalIndex = 0;
+        document.getElementById('timer').textContent = formatTime(intervals[currentIntervalIndex]);
+        startInterval(intervals[currentIntervalIndex]);
+    }
+
+    function startInterval(interval) {
+        if (intervalId) clearInterval(intervalId);
+        const startTime = Date.now();
+        const endTime = startTime + interval * 1000;
+        document.getElementById('timer').textContent = formatTime(interval);
+
+        intervalId = setInterval(function() {
+            const remainingTime = endTime - Date.now();
+            const seconds = Math.ceil(remainingTime / 1000);
+
+            if (remainingTime <= 0) {
+                clearInterval(intervalId);
+                document.getElementById('timer').textContent = "00:00:00";
+                if (alarmToggle.checked) {
+                    playSound(selectedSound);
+                }
+                currentIntervalIndex++;
+
+                if (currentIntervalIndex < intervals.length) {
+                    setTimeout(() => startInterval(intervals[currentIntervalIndex]), 1000);
+                } else if (document.getElementById('repeat-toggle').checked) {
+                    currentIntervalIndex = 0;
+                    setTimeout(() => startInterval(intervals[currentIntervalIndex]), 1000);
+                }
+            } else {
+                document.getElementById('timer').textContent = formatTime(seconds);
+            }
+        }, 1000);
+    }
+
+    function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return [h > 0 ? h : '00', m > 9 ? m : '0' + m, s > 9 ? s : '0' + s].join(':');
+    }
+
+    function stopTimer() {
+        if (intervalId) clearInterval(intervalId);
+        document.getElementById('timer').textContent = "00:00:00";
+        currentIntervalIndex = 0;
+        intervals = [];
+        updateIntervalList();
+    }
+
+    function updateIntervalList() {
+        const intervalsList = document.getElementById('intervals-list');
+        intervalsList.innerHTML = '';
+        intervals.forEach((interval, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `Interval ${index + 1}: ${interval} seconds`;
+            intervalsList.appendChild(listItem);
+        });
+    }
+    function playSound(sound) {
+        var audio = new Audio(sound);
+        audio.play();
+        setTimeout(() => {
+            audio.pause();
+            audio.currentTime = 0; // Rewind the sound to the start
+        }, 3000); // Play sound for 3 seconds then stop
+    }
+});
+</script>
 </body>
 </html>
