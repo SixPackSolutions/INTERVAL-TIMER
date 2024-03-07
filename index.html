@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Interval Workout Timer</title>
+  <style>
+    /* The existing styles will remain unchanged and are not shown here for brevity */
+
+    /* Additional styles for the new elements */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .keypad button {
+      height: 50px;
+      background: #ddd; /* Light grey background */
+      font-size: 20px; /* Large font size for keypad numbers */
+      border-radius: 5px; /* Rounded corners */
+    }
+
+    .clear-btn {
+      background-color: #f44336; /* Red color */
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 20px; /* Space below the button */
+    }
+
+    .dropdown {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <!-- The existing HTML for the timer will remain unchanged and is not shown here for brevity -->
+
+  <!-- Additional HTML for the new interval creation components -->
+  <div id="interval-creation-container">
+    <div class="keypad">
+      <!-- Keypad numbers -->
+      <button class="keypad-btn">1</button>
+      <!-- Add additional buttons for numbers 0-9 and clear button -->
+    </div>
+
+    <!-- Dropdowns for interval label, sound selection, and repeat count -->
+    <select class="dropdown" id="interval-label">
+      <option>Interval 1</option>
+      <!-- Additional options -->
+    </select>
+
+    <select class="dropdown" id="interval-sound">
+      <option>No Sound</option>
+      <!-- Additional options -->
+    </select>
+
+    <select class="dropdown" id="interval-repeat">
+      <option>Repeat 1</option>
+      <!-- Additional options -->
+    </select>
+
+    <!-- Toggle switch for pausing timer after interval -->
+    <label class="toggle-switch">
+      <input type="checkbox">
+      <span class="slider round"></span>
+    </label>
+
+    <!-- Button to add new interval -->
+    <button id="add-interval-btn">Add new interval</button>
+  </div>
+
+</body>
+</html>
